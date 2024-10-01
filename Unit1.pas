@@ -220,16 +220,18 @@ begin
   inc(in_zahl_0);
 
   // reduziere Resourcenverbrauch ...
-  if RichEdit1.Lines.Count >= 30 then
+  if RichEdit1.Lines.Count >= 50 then
   begin
+    Timer1.Enabled := false;
+    Timer2.Enabled := false;
+
     s := RichEdit1.Lines.Strings[0]; // Erste Zeile speichern
-    RichEdit1.Lines.BeginUpdate; // Verhindert Flackern während des Updates
-    try
-      RichEdit1.Lines.Clear;     // Alle Zeilen löschen
-      RichEdit1.Lines.Add(s);    // Nur die erste Zeile wieder hinzufügen
-    finally
-      RichEdit1.Lines.EndUpdate; // Update abschließen und die Anzeige aktualisieren
-    end;
+
+    RichEdit1.Lines.Clear;
+    RichEdit1.Lines.Add(s);
+
+    Timer1.Enabled := True;
+    Timer2.Enabled := True;
   end;
 
   if RichEdit1.Lines.Count > 0 then
