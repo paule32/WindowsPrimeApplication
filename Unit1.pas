@@ -69,6 +69,9 @@ procedure TForm1.Button1Click(Sender: TObject);
 begin
   FSeconds := 0;
 
+  gap_zahl_old := 0;
+  Edit3.Text := IntToStr(gap_zahl_old);
+
   Button1.Enabled := false;
   Timer1.Interval := StrToInt(Edit2.Text);
   Timer1.Enabled := true;
