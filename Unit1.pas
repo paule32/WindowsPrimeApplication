@@ -32,6 +32,7 @@ type
     About1: TMenuItem;
     Label7: TLabel;
     Edit3: TEdit;
+    Label8: TLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Timer1Timer(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -147,22 +148,22 @@ begin
   // Berechne die Y-Positionen für den Anfang und das Ende des grünen Bereichs
   EndY := Rect.Bottom; // Y-Position der Linie 0 (unten)
   case gap_zahl of
-     0: begin StartY := Rect.Bottom - 18 *  1 +  1; end;
-     1: begin StartY := Rect.Bottom - 18 *  2 +  2; end;
-     2: begin StartY := Rect.Bottom - 18 *  3 +  3; end;
-     3: begin StartY := Rect.Bottom - 18 *  4 +  4; end;
-     4: begin StartY := Rect.Bottom - 18 *  5 +  5; end;
-     5: begin StartY := Rect.Bottom - 18 *  6 +  6; end;
-     6: begin StartY := Rect.Bottom - 18 *  7 +  7; end;
-     7: begin StartY := Rect.Bottom - 18 *  8 +  8; end;
-     8: begin StartY := Rect.Bottom - 18 *  9 +  9; end;
-     9: begin StartY := Rect.Bottom - 18 * 10 + 10; end;
-    10: begin StartY := Rect.Bottom - 18 * 11 + 11; end;
-    11: begin StartY := Rect.Bottom - 18 * 12 + 12; end;
-    12: begin StartY := Rect.Bottom - 18 * 13 + 13; end;
-    13: begin StartY := Rect.Bottom - 18 * 14 + 14; end;
-    14: begin StartY := Rect.Bottom - 18 * 15 + 15; end;
-    15: begin StartY := Rect.Bottom - 18 * 16 + 16; end;
+     0: begin StartY := Rect.Bottom - 10 *  1; end;
+     1: begin StartY := Rect.Bottom - 10 *  2; end;
+     2: begin StartY := Rect.Bottom - 10 *  3; end;
+     3: begin StartY := Rect.Bottom - 10 *  4; end;
+     4: begin StartY := Rect.Bottom - 10 *  5; end;
+     5: begin StartY := Rect.Bottom - 10 *  6; end;
+     6: begin StartY := Rect.Bottom - 10 *  7; end;
+     7: begin StartY := Rect.Bottom - 10 *  8; end;
+     8: begin StartY := Rect.Bottom - 10 *  9; end;
+     9: begin StartY := Rect.Bottom - 10 * 10; end;
+    10: begin StartY := Rect.Bottom - 10 * 11; end;
+    11: begin StartY := Rect.Bottom - 10 * 12; end;
+    12: begin StartY := Rect.Bottom - 10 * 13; end;
+    13: begin StartY := Rect.Bottom - 10 * 14; end;
+    14: begin StartY := Rect.Bottom - 10 * 15; end;
+    15: begin StartY := Rect.Bottom - 10 * 16; end;
   end;
 
   // Setze die Farbe für den grünen Bereich
@@ -182,6 +183,7 @@ var
   in_zahl_7: Integer;
   //
   prime: Boolean;
+  s: String;
 begin
   graph_zahl := 1;
   run_zahl := 0;
@@ -203,7 +205,8 @@ begin
 
   if prime then
   begin
-    RichEdit1.Lines.Insert(0, Edit1.Text);
+    s := Edit1.Text;
+    RichEdit1.Lines.Insert(0, s);
   end;
 
   if not checkbox1.checked then
@@ -215,6 +218,19 @@ begin
   end;
 
   inc(in_zahl_0);
+
+  // reduziere Resourcenverbrauch ...
+  if RichEdit1.Lines.Count >= 30 then
+  begin
+    s := RichEdit1.Lines.Strings[0]; // Erste Zeile speichern
+    RichEdit1.Lines.BeginUpdate; // Verhindert Flackern während des Updates
+    try
+      RichEdit1.Lines.Clear;     // Alle Zeilen löschen
+      RichEdit1.Lines.Add(s);    // Nur die erste Zeile wieder hinzufügen
+    finally
+      RichEdit1.Lines.EndUpdate; // Update abschließen und die Anzeige aktualisieren
+    end;
+  end;
 
   if RichEdit1.Lines.Count > 0 then
   if Length(RichEdit1.Lines.Strings[0]) > 0 then

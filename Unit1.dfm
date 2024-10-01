@@ -71,17 +71,27 @@ object Form1: TForm1
     Height = 16
     Caption = 'Max. Gap: '
   end
+  object Label8: TLabel
+    Left = 104
+    Top = 85
+    Width = 85
+    Height = 16
+    Caption = 'Found Primes:'
+  end
   object RichEdit1: TRichEdit
     Left = 104
-    Top = 87
+    Top = 107
     Width = 497
-    Height = 98
+    Height = 78
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -12
     Font.Name = 'Segoe UI'
     Font.Style = []
     ParentFont = False
+    PlainText = True
+    ReadOnly = True
+    ScrollBars = ssVertical
     TabOrder = 0
   end
   object Button1: TButton
@@ -141,7 +151,7 @@ object Form1: TForm1
     Width = 185
     Height = 24
     TabOrder = 7
-    Text = '120'
+    Text = '0'
   end
   object Timer1: TTimer
     Interval = 250
