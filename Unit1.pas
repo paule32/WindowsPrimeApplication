@@ -177,10 +177,16 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 var
-  in_zahl_2: Integer;
-  in_zahl_3: Integer;
-  in_zahl_5: Integer;
-  in_zahl_7: Integer;
+  in_zahl_2 : Integer;
+  in_zahl_3 : Integer;
+  in_zahl_5 : Integer;
+  in_zahl_7 : Integer;
+  in_zahl_11: Integer;
+  in_zahl_13: Integer;
+  in_zahl_17: Integer;
+  in_zahl_19: Integer;
+  in_zahl_23: Integer;
+  in_zahl_29: Integer;
   //
   prime: Boolean;
   s: String;
@@ -190,12 +196,27 @@ begin
 
   in_zahl_0 := StrToInt(Edit1.Text);
 
-  in_zahl_2 := in_zahl_0 mod 2;
-  in_zahl_3 := in_zahl_0 mod 3;
-  in_zahl_5 := in_zahl_0 mod 5;
-  in_zahl_7 := in_zahl_0 mod 7;
+  in_zahl_2  := in_zahl_0 mod 2;
+  in_zahl_3  := in_zahl_0 mod 3;
+  in_zahl_5  := in_zahl_0 mod 5;
+  in_zahl_7  := in_zahl_0 mod 7;
+  in_zahl_11 := in_zahl_0 mod 11;
+  in_zahl_13 := in_zahl_0 mod 13;
+  in_zahl_17 := in_zahl_0 mod 17;
+  in_zahl_19 := in_zahl_0 mod 19;
+  in_zahl_23 := in_zahl_0 mod 23;
+  in_zahl_29 := in_zahl_0 mod 29;
 
-  if (in_zahl_2 <> 0) and (in_zahl_3 <> 0) and (in_zahl_5 <> 0) and (in_zahl_7 <> 0) then
+  if (in_zahl_2  <> 0) and
+     (in_zahl_3  <> 0) and
+     (in_zahl_5  <> 0) and
+     (in_zahl_7  <> 0) and
+     (in_zahl_11 <> 0) and
+     (in_zahl_13 <> 0) and
+     (in_zahl_17 <> 0) and
+     (in_zahl_19 <> 0) and
+     (in_zahl_23 <> 0) and
+     (in_zahl_29 <> 0) then
   begin
     prime := true;
   end else
