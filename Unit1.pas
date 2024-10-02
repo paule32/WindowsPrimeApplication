@@ -190,11 +190,47 @@ var
   //
   prime: Boolean;
   s: String;
+
+  prim_array : Array[0..15] of Integer;
+  i: Integer;
+  z: uint64;
 begin
   graph_zahl := 1;
   run_zahl := 0;
 
+  // Vorbelegung des prim_array
+  prim_array[0 ] :=  2;
+  prim_array[1 ] :=  3;
+  prim_array[2 ] :=  5;
+  prim_array[3 ] :=  7;
+  prim_array[4 ] := 11;
+  prim_array[5 ] := 13;
+  prim_array[6 ] := 17;
+  prim_array[7 ] := 19;
+  prim_array[8 ] := 23;
+  prim_array[9 ] := 29;
+  prim_array[10] := 31;
+  prim_array[11] := 37;
+  prim_array[12] := 41;
+  prim_array[13] := 43;
+  prim_array[14] := 47;
+  prim_array[15] := 53;
+
   in_zahl_0 := StrToInt(Edit1.Text);
+
+  for i := Low(prim_array) to High(prim_array) do
+  begin
+    z := in_zahl_0 div 2;
+    if z mod 2 = 0 then
+    begin
+      prime := true
+    end else
+    begin
+      prime := false;
+    end;
+  end;
+
+
 
   in_zahl_2  := in_zahl_0 mod 2;
   in_zahl_3  := in_zahl_0 mod 3;

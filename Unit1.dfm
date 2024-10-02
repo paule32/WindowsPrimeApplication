@@ -154,6 +154,7 @@ object Form1: TForm1
     Text = '0'
   end
   object Timer1: TTimer
+    Enabled = False
     Interval = 250
     OnTimer = Timer1Timer
     Left = 152
