@@ -33,6 +33,8 @@ type
     Label7: TLabel;
     Edit3: TEdit;
     Label8: TLabel;
+    RichEdit2: TRichEdit;
+    Label9: TLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Timer1Timer(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -45,6 +47,8 @@ type
   public
     in_zahl_0: Integer;
     graph_zahl: Integer;
+    twin_zahl_old: Integer;
+    twin_zahl: Integer;
     gap_zahl: Integer;
     gap_zahl_old: Integer;
     run_zahl: Integer;
@@ -53,6 +57,7 @@ type
 
 var
   Form1: TForm1;
+  prim_array : Array[0..15] of Integer;
 
 implementation
 
@@ -70,7 +75,28 @@ procedure TForm1.Button1Click(Sender: TObject);
 begin
   FSeconds := 0;
 
-  gap_zahl_old := 0;
+  // Vorbelegung des prim_array
+  prim_array[0 ] :=  2;
+  prim_array[1 ] :=  3;
+  prim_array[2 ] :=  5;
+  prim_array[3 ] :=  7;
+  prim_array[4 ] := 11;
+  prim_array[5 ] := 13;
+  prim_array[6 ] := 17;
+  prim_array[7 ] := 19;
+  prim_array[8 ] := 23;
+  prim_array[9 ] := 29;
+  prim_array[10] := 31;
+  prim_array[11] := 37;
+  prim_array[12] := 41;
+  prim_array[13] := 43;
+  prim_array[14] := 47;
+  prim_array[15] := 53;
+
+  gap_zahl_old  := 0;
+  twin_zahl_old := 0;
+  twin_zahl     := 0;
+
   Edit3.Text := IntToStr(gap_zahl_old);
 
   Button1.Enabled := false;
@@ -178,86 +204,29 @@ end;
 procedure TForm1.Timer1Timer(Sender: TObject);
 var
   in_zahl_2 : Integer;
-  in_zahl_3 : Integer;
-  in_zahl_5 : Integer;
-  in_zahl_7 : Integer;
-  in_zahl_11: Integer;
-  in_zahl_13: Integer;
-  in_zahl_17: Integer;
-  in_zahl_19: Integer;
-  in_zahl_23: Integer;
-  in_zahl_29: Integer;
   //
   prime: Boolean;
   s: String;
 
-  prim_array : Array[0..15] of Integer;
   i: Integer;
-  z: uint64;
+  z1,z2,z3: uint64;
 begin
   graph_zahl := 1;
   run_zahl := 0;
-
-  // Vorbelegung des prim_array
-  prim_array[0 ] :=  2;
-  prim_array[1 ] :=  3;
-  prim_array[2 ] :=  5;
-  prim_array[3 ] :=  7;
-  prim_array[4 ] := 11;
-  prim_array[5 ] := 13;
-  prim_array[6 ] := 17;
-  prim_array[7 ] := 19;
-  prim_array[8 ] := 23;
-  prim_array[9 ] := 29;
-  prim_array[10] := 31;
-  prim_array[11] := 37;
-  prim_array[12] := 41;
-  prim_array[13] := 43;
-  prim_array[14] := 47;
-  prim_array[15] := 53;
 
   in_zahl_0 := StrToInt(Edit1.Text);
 
   for i := Low(prim_array) to High(prim_array) do
   begin
-    z := in_zahl_0 div 2;
-    if z mod 2 = 0 then
+    in_zahl_2 := in_zahl_0 mod prim_array[i];
+    if in_zahl_2 <> 0 then
     begin
-      prime := true
+        prime := true;
     end else
     begin
-      prime := false;
+        prime := false;
+        break;
     end;
-  end;
-
-
-
-  in_zahl_2  := in_zahl_0 mod 2;
-  in_zahl_3  := in_zahl_0 mod 3;
-  in_zahl_5  := in_zahl_0 mod 5;
-  in_zahl_7  := in_zahl_0 mod 7;
-  in_zahl_11 := in_zahl_0 mod 11;
-  in_zahl_13 := in_zahl_0 mod 13;
-  in_zahl_17 := in_zahl_0 mod 17;
-  in_zahl_19 := in_zahl_0 mod 19;
-  in_zahl_23 := in_zahl_0 mod 23;
-  in_zahl_29 := in_zahl_0 mod 29;
-
-  if (in_zahl_2  <> 0) and
-     (in_zahl_3  <> 0) and
-     (in_zahl_5  <> 0) and
-     (in_zahl_7  <> 0) and
-     (in_zahl_11 <> 0) and
-     (in_zahl_13 <> 0) and
-     (in_zahl_17 <> 0) and
-     (in_zahl_19 <> 0) and
-     (in_zahl_23 <> 0) and
-     (in_zahl_29 <> 0) then
-  begin
-    prime := true;
-  end else
-  begin
-    prime := false;
   end;
 
   if prime then
@@ -274,7 +243,22 @@ begin
     exit;
   end;
 
+  // zwilling ?
+  if RichEdit1.Lines.Count > 1 then
+  begin
+    z1 := StrToInt(RichEdit1.Lines.Strings[0]);
+    z2 := StrToInt(RichEdit1.Lines.Strings[1]);
+    z3 := z1 - z2;
+    if (prime = true) and (z3 = 2) then
+    begin
+      RichEdit2.Lines.Insert(0,Format('%s, %s',[
+      IntToStr(z1),
+      IntToStr(z2)]));
+    end;
+  end;
+
   inc(in_zahl_0);
+  twin_zahl_old := in_zahl_0;
 
   // reduziere Resourcenverbrauch ...
   if RichEdit1.Lines.Count >= 50 then

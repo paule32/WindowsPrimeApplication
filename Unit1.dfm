@@ -78,6 +78,13 @@ object Form1: TForm1
     Height = 16
     Caption = 'Found Primes:'
   end
+  object Label9: TLabel
+    Left = 344
+    Top = 245
+    Width = 82
+    Height = 16
+    Caption = 'Prime Twins : '
+  end
   object RichEdit1: TRichEdit
     Left = 104
     Top = 107
@@ -152,6 +159,22 @@ object Form1: TForm1
     Height = 24
     TabOrder = 7
     Text = '0'
+  end
+  object RichEdit2: TRichEdit
+    Left = 344
+    Top = 264
+    Width = 256
+    Height = 117
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -12
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
+    PlainText = True
+    ReadOnly = True
+    ScrollBars = ssVertical
+    TabOrder = 8
   end
   object Timer1: TTimer
     Enabled = False
