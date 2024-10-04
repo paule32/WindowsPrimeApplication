@@ -2,7 +2,9 @@
 
 uses
   Vcl.Forms,
-  Unit1 in 'Unit1.pas' {Form1};
+  Unit1 in 'Unit1.pas' {Form1},
+  gmp_lib in 'gmp_lib.pas',
+  gmp_obj in 'gmp_obj.pas';
 
 {$R *.res}
 

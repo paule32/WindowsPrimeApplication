@@ -7,3 +7,6 @@ prime.dproj.local
 prime.dsk
 prime.dsv
 prime.identcache
+mpir.dll
+gmp_lib.pas
+gmp_obj.pas
