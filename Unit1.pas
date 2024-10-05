@@ -21,8 +21,6 @@ type
     Panel2: TPanel;
     Label3: TLabel;
     Timer2: TTimer;
-    PaintBox1: TPaintBox;
-    Label4: TLabel;
     Edit2: TEdit;
     Label5: TLabel;
     Label6: TLabel;
@@ -31,8 +29,6 @@ type
     Exit1: TMenuItem;
     Help1: TMenuItem;
     About1: TMenuItem;
-    Label7: TLabel;
-    Edit3: TEdit;
     Label8: TLabel;
     RichEdit2: TRichEdit;
     Label9: TLabel;
@@ -41,16 +37,12 @@ type
     procedure Button1Click(Sender: TObject);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Timer2Timer(Sender: TObject);
-    procedure PaintBox1Paint(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
   private
   public
-    in_zahl_0: Integer;
-    graph_zahl: Integer;
-
     Fseconds: Integer;
 
     twin_zahl_old: mpz_t;
@@ -106,15 +98,8 @@ begin
     then
     raise Exception.Create('invalid "twin_zahl" string.');
 
-    Edit3.Text := mpz_get_str(nil, 10, gap_zahl_old);
-
-    if mpz_set_str(input_number,
-    PAnsiChar(AnsiString(Trim(Edit3.Text))), 10) <> 0
-    then
-    raise Exception.Create('invalide "mpz_set_str" string.');
-
-
     Button1.Enabled := false;
+    Label1.Visible := true;
     Timer1.Interval := StrToInt(Edit2.Text);
     Timer1.Enabled := true;
     Timer2.Enabled := true;
@@ -134,6 +119,7 @@ begin
     mpz_init(twin_zahl);
 
     mpz_init(gap_zahl_old);
+    mpz_init(gap_zahl);
     mpz_init(in_zahl_2);
 
     mpz_init(a);
@@ -142,6 +128,8 @@ begin
     mpz_init(z1);
     mpz_init(z2);
     mpz_init(z3);
+
+    mpz_set_ui(gap_zahl, 0);
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -153,6 +141,7 @@ begin
     mpz_clear(twin_zahl);
 
     mpz_clear(gap_zahl_old);
+    mpz_clear(gap_zahl);
     mpz_clear(in_zahl_2);
 
     mpz_clear(a);
@@ -171,71 +160,19 @@ begin
         Timer1.Enabled := false;
         Timer2.Enabled := false;
         Button1.Enabled := true;
+        Label1.Visible := false;
     end;
 end;
 
 procedure TForm1.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-    if (key = vk_Escape) or (key = vk_F2) then
+    if (key = vk_Escape) then
     begin
         Timer1.Enabled := false;
         Timer2.Enabled := false;
         Button1.Enabled := true;
+        Label1.Visible := false;
     end;
-end;
-
-procedure TForm1.PaintBox1Paint(Sender: TObject);
-var
-    rect: TRect;
-    i, StartY, LineSpacing: Integer;
-    GreenStartX, GreenEndX: Integer;
-    Radius, EndY: Integer;
-    GreenRect: TRect;
-    s: String;
-begin
-    rect := TRect.Create(30,0,PaintBox1.Width,PaintBox1.Height);
-
-    // Hintergrund
-    PaintBox1.Canvas.Brush.Color := clWhite;
-    PaintBox1.Canvas.FillRect(rect);
-
-    // Rand
-    rect := TRect.Create(30,1,PaintBox1.Width-1,PaintBox1.Height-1);
-    PaintBox1.Canvas.Brush.Style := bsClear;
-    PaintBox1.Canvas.Pen.Color := clBlack;
-    PaintBox1.Canvas.Rectangle(rect);
-
-    // Abstand zwischen den Linien
-    LineSpacing := rect.Height div 16;
-
-    PaintBox1.Canvas.Pen.Color := clNavy;
-
-    for i := 0 to 15 do
-    begin
-        StartY := Rect.Top + i * LineSpacing;
-
-        PaintBox1.Canvas.TextOut(Rect.Left - 20, StartY + 6, IntToStr(15-i));
-
-        PaintBox1.Canvas.MoveTo(Rect.Left, StartY);
-        PaintBox1.Canvas.LineTo(Rect.Right, StartY);
-    end;
-
-    // Definiere die Position des grünen Bereichs
-    graph_zahl  := graph_zahl  + 4 ;
-    GreenStartX := Rect.Left   + 2 + graph_zahl;
-    GreenEndX   := GreenStartX + 7;
-
-    // Berechne die Y-Positionen für den Anfang und das Ende des grünen Bereichs
-    EndY   := Rect.Bottom;
-    StartY := Rect.Bottom - 10 *  1;
-
-    // Setze die Farbe für den grünen Bereich
-    PaintBox1.Canvas.Brush.Color := clGreen;
-    PaintBox1.Canvas.Brush.Style := bsSolid;
-
-    // Zeichne das gefüllte Rechteck für den grünen Bereich
-    GreenRect := Rect.Create(GreenStartX, StartY, GreenEndX, EndY);
-    PaintBox1.Canvas.FillRect(GreenRect);
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
@@ -244,9 +181,7 @@ var
     s1, s2: String;
     i: Integer;
 begin
-    graph_zahl := 1;
-
-    if mpz_set_str(z1,
+    if mpz_set_str(input_number,
     PAnsiChar(AnsiString(Trim(Edit1.Text))), 10) <> 0
     then
     raise Exception.Create('invalid "twin 0" string.');
@@ -274,7 +209,7 @@ begin
 
     if prime then
     begin
-        s1 := Edit1.Text;
+        s1 := Trim(Edit1.Text);
         RichEdit1.Lines.Insert(0, s1);
     end;
 
@@ -283,6 +218,7 @@ begin
         Timer1.Enabled := false;
         Timer2.Enabled := false;
         Button1.Enabled := true;
+        Label1.Visible := false;
         exit;
     end;
 
@@ -329,17 +265,9 @@ begin
         Timer2.Enabled := True;
     end;
 
-    if mpz_cmp(gap_zahl,gap_zahl_old) > 0 then
-    begin
-        Edit3.Text := mpz_get_str(nil, 10, gap_zahl);
-        mpz_set(gap_zahl_old, gap_zahl);
-    end;
-
     // text
     Edit1.Text     := mpz_get_str(nil, 10, input_number);
     Panel2.Caption := mpz_get_str(nil, 10, gap_zahl);
-
-    PaintBox1Paint(Sender);
 end;
 
 procedure TForm1.Timer2Timer(Sender: TObject);

@@ -2,7 +2,7 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Primesuche (c) 2024 Jens Kallup'
-  ClientHeight = 389
+  ClientHeight = 336
   ClientWidth = 608
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -18,11 +18,12 @@ object Form1: TForm1
   OnKeyUp = FormKeyUp
   TextHeight = 16
   object Label1: TLabel
-    Left = 104
-    Top = 194
+    Left = 264
+    Top = 63
     Width = 227
     Height = 16
     Caption = 'Press Escape-Key to stop calculation  '
+    Visible = False
   end
   object Label2: TLabel
     Left = 8
@@ -38,20 +39,6 @@ object Form1: TForm1
     Height = 16
     Caption = 'Gap Count:'
   end
-  object PaintBox1: TPaintBox
-    Left = 8
-    Top = 216
-    Width = 313
-    Height = 165
-    OnPaint = PaintBox1Paint
-  end
-  object Label4: TLabel
-    Left = 8
-    Top = 194
-    Width = 75
-    Height = 16
-    Caption = 'Gap Graph:  '
-  end
   object Label5: TLabel
     Left = 104
     Top = 8
@@ -66,13 +53,6 @@ object Form1: TForm1
     Height = 16
     Caption = 'Prime to Check:  '
   end
-  object Label7: TLabel
-    Left = 344
-    Top = 216
-    Width = 65
-    Height = 16
-    Caption = 'Max. Gap: '
-  end
   object Label8: TLabel
     Left = 104
     Top = 85
@@ -81,8 +61,8 @@ object Form1: TForm1
     Caption = 'Found Primes:'
   end
   object Label9: TLabel
-    Left = 344
-    Top = 245
+    Left = 8
+    Top = 191
     Width = 82
     Height = 16
     Caption = 'Prime Twins : '
@@ -154,18 +134,10 @@ object Form1: TForm1
     TabOrder = 6
     Text = '120'
   end
-  object Edit3: TEdit
-    Left = 415
-    Top = 213
-    Width = 185
-    Height = 24
-    TabOrder = 7
-    Text = '0'
-  end
   object RichEdit2: TRichEdit
-    Left = 344
-    Top = 264
-    Width = 256
+    Left = 8
+    Top = 208
+    Width = 592
     Height = 117
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -176,7 +148,7 @@ object Form1: TForm1
     PlainText = True
     ReadOnly = True
     ScrollBars = ssVertical
-    TabOrder = 8
+    TabOrder = 7
   end
   object Timer1: TTimer
     Enabled = False
