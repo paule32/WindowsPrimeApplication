@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls,
-  Vcl.Menus;
+  Vcl.Menus,
+  gmp_lib, gmp_obj;
 
 type
   TForm1 = class(TForm)
@@ -43,21 +44,36 @@ type
     procedure PaintBox1Paint(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure About1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
   public
     in_zahl_0: Integer;
     graph_zahl: Integer;
-    twin_zahl_old: Integer;
-    twin_zahl: Integer;
-    gap_zahl: Integer;
-    gap_zahl_old: Integer;
-    run_zahl: Integer;
+
     Fseconds: Integer;
+
+    twin_zahl_old: mpz_t;
+    twin_zahl    : mpz_t;
+
+    gap_zahl     : mpz_t;
+    gap_zahl_old : mpz_t;
+
+    input_number : mpz_t;
+
+    p, in_zahl_2 : mpz_t;
+    a, b         : mpz_t;
+    z1, z2, z3   : mpz_t;
   end;
 
 var
-  Form1: TForm1;
-  prim_array : Array[0..15] of Integer;
+    Form1: TForm1;
+
+    // Vorbelegung des prim_array
+    prim_array : Array[0..15] of AnsiString = (
+         '2', '3', '5', '7','11','13','17','19','23','29',
+        '31','37','41','43','47','53'
+    );
 
 implementation
 
@@ -65,247 +81,280 @@ implementation
 
 procedure TForm1.About1Click(Sender: TObject);
 begin
-  ShowMessage('Prime Searcher Version 0.0.1' +
-  #10 + '(c) 2024 by Jens Kallup' +
-  #10 +
-  #10 + 'You can stop calculation by pressing Escape Key.');
+    ShowMessage('Prime Searcher Version 0.0.1' +
+    #10 + '(c) 2024 by Jens Kallup' +
+    #10 +
+    #10 + 'You can stop calculation by pressing Escape Key.');
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin
-  FSeconds := 0;
+    FSeconds := 0;
 
-  // Vorbelegung des prim_array
-  prim_array[0 ] :=  2;
-  prim_array[1 ] :=  3;
-  prim_array[2 ] :=  5;
-  prim_array[3 ] :=  7;
-  prim_array[4 ] := 11;
-  prim_array[5 ] := 13;
-  prim_array[6 ] := 17;
-  prim_array[7 ] := 19;
-  prim_array[8 ] := 23;
-  prim_array[9 ] := 29;
-  prim_array[10] := 31;
-  prim_array[11] := 37;
-  prim_array[12] := 41;
-  prim_array[13] := 43;
-  prim_array[14] := 47;
-  prim_array[15] := 53;
+    if mpz_set_str(gap_zahl_old,
+    PAnsiChar(AnsiString('0')), 10) <> 0
+    then
+    raise Exception.Create('invalid "gap_zahl_old" string.');
 
-  gap_zahl_old  := 0;
-  twin_zahl_old := 0;
-  twin_zahl     := 0;
+    if mpz_set_str(twin_zahl_old,
+    PAnsiChar(AnsiString('0')), 10) <> 0
+    then
+    raise Exception.Create('invalid "twin_zahl_old" string.');
 
-  Edit3.Text := IntToStr(gap_zahl_old);
+    if mpz_set_str(twin_zahl,
+    PAnsiChar(AnsiString('0')), 10) <> 0
+    then
+    raise Exception.Create('invalid "twin_zahl" string.');
 
-  Button1.Enabled := false;
-  Timer1.Interval := StrToInt(Edit2.Text);
-  Timer1.Enabled := true;
-  Timer2.Enabled := true;
+    Edit3.Text := mpz_get_str(nil, 10, gap_zahl_old);
+
+    if mpz_set_str(input_number,
+    PAnsiChar(AnsiString(Trim(Edit3.Text))), 10) <> 0
+    then
+    raise Exception.Create('invalide "mpz_set_str" string.');
+
+
+    Button1.Enabled := false;
+    Timer1.Interval := StrToInt(Edit2.Text);
+    Timer1.Enabled := true;
+    Timer2.Enabled := true;
 end;
 
 procedure TForm1.Exit1Click(Sender: TObject);
 begin
-  Close;
+    Close;
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+    // initialization ...
+    mpz_init(input_number);
+
+    mpz_init(twin_zahl_old);
+    mpz_init(twin_zahl);
+
+    mpz_init(gap_zahl_old);
+    mpz_init(in_zahl_2);
+
+    mpz_init(a);
+    mpz_init(b);
+
+    mpz_init(z1);
+    mpz_init(z2);
+    mpz_init(z3);
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+    // clean up
+    mpz_clear(input_number);
+
+    mpz_clear(twin_zahl_old);
+    mpz_clear(twin_zahl);
+
+    mpz_clear(gap_zahl_old);
+    mpz_clear(in_zahl_2);
+
+    mpz_clear(a);
+    mpz_clear(b);
+
+    mpz_clear(z1);
+    mpz_clear(z2);
+    mpz_clear(z3);
 end;
 
 procedure TForm1.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (key = vk_Escape) or (key = vk_F2) then
-  begin
-    Timer1.Enabled := false;
-    Timer2.Enabled := false;
-    Button1.Enabled := true;
-  end;
+    if (key = vk_Escape) or (key = vk_F2) then
+    begin
+        Timer1.Enabled := false;
+        Timer2.Enabled := false;
+        Button1.Enabled := true;
+    end;
 end;
 
 procedure TForm1.FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if (key = vk_Escape) or (key = vk_F2) then
-  begin
-    Timer1.Enabled := false;
-    Timer2.Enabled := false;
-    Button1.Enabled := true;
-  end;
+    if (key = vk_Escape) or (key = vk_F2) then
+    begin
+        Timer1.Enabled := false;
+        Timer2.Enabled := false;
+        Button1.Enabled := true;
+    end;
 end;
 
 procedure TForm1.PaintBox1Paint(Sender: TObject);
 var
-  rect: TRect;
-  i, StartY, LineSpacing: Integer;
-  GreenStartX, GreenEndX: Integer;
-  Radius, EndY: Integer;
-  GreenRect: TRect;
+    rect: TRect;
+    i, StartY, LineSpacing: Integer;
+    GreenStartX, GreenEndX: Integer;
+    Radius, EndY: Integer;
+    GreenRect: TRect;
+    s: String;
 begin
-  rect := TRect.Create(30,0,PaintBox1.Width,PaintBox1.Height);
+    rect := TRect.Create(30,0,PaintBox1.Width,PaintBox1.Height);
 
-  // Hintergrund
-  PaintBox1.Canvas.Brush.Color := clWhite;
-  PaintBox1.Canvas.FillRect(rect);
+    // Hintergrund
+    PaintBox1.Canvas.Brush.Color := clWhite;
+    PaintBox1.Canvas.FillRect(rect);
 
-  // Rand
-  rect := TRect.Create(30,1,PaintBox1.Width-1,PaintBox1.Height-1);
-  PaintBox1.Canvas.Brush.Style := bsClear;
-  PaintBox1.Canvas.Pen.Color := clBlack;
-  PaintBox1.Canvas.Rectangle(rect);
+    // Rand
+    rect := TRect.Create(30,1,PaintBox1.Width-1,PaintBox1.Height-1);
+    PaintBox1.Canvas.Brush.Style := bsClear;
+    PaintBox1.Canvas.Pen.Color := clBlack;
+    PaintBox1.Canvas.Rectangle(rect);
 
-  // Abstand zwischen den Linien
-  LineSpacing := rect.Height div 16;
+    // Abstand zwischen den Linien
+    LineSpacing := rect.Height div 16;
 
-  PaintBox1.Canvas.Pen.Color := clNavy;
+    PaintBox1.Canvas.Pen.Color := clNavy;
 
-  for i := 0 to 15 do
-  begin
-    StartY := Rect.Top + i * LineSpacing;
+    for i := 0 to 15 do
+    begin
+        StartY := Rect.Top + i * LineSpacing;
 
-    PaintBox1.Canvas.TextOut(Rect.Left - 20, StartY + 6, IntToStr(15-i));
+        PaintBox1.Canvas.TextOut(Rect.Left - 20, StartY + 6, IntToStr(15-i));
 
-    PaintBox1.Canvas.MoveTo(Rect.Left, StartY);
-    PaintBox1.Canvas.LineTo(Rect.Right, StartY);
-  end;
+        PaintBox1.Canvas.MoveTo(Rect.Left, StartY);
+        PaintBox1.Canvas.LineTo(Rect.Right, StartY);
+    end;
 
-  // Definiere die Position des grünen Bereichs
-  graph_zahl := graph_zahl + 4 ;
-  GreenStartX := Rect.Left + 2 + graph_zahl;
-  GreenEndX := GreenStartX + 7;
+    // Definiere die Position des grünen Bereichs
+    graph_zahl  := graph_zahl  + 4 ;
+    GreenStartX := Rect.Left   + 2 + graph_zahl;
+    GreenEndX   := GreenStartX + 7;
 
-  // Berechne die Y-Positionen für den Anfang und das Ende des grünen Bereichs
-  EndY := Rect.Bottom; // Y-Position der Linie 0 (unten)
-  case gap_zahl of
-     0: begin StartY := Rect.Bottom - 10 *  1; end;
-     1: begin StartY := Rect.Bottom - 10 *  2; end;
-     2: begin StartY := Rect.Bottom - 10 *  3; end;
-     3: begin StartY := Rect.Bottom - 10 *  4; end;
-     4: begin StartY := Rect.Bottom - 10 *  5; end;
-     5: begin StartY := Rect.Bottom - 10 *  6; end;
-     6: begin StartY := Rect.Bottom - 10 *  7; end;
-     7: begin StartY := Rect.Bottom - 10 *  8; end;
-     8: begin StartY := Rect.Bottom - 10 *  9; end;
-     9: begin StartY := Rect.Bottom - 10 * 10; end;
-    10: begin StartY := Rect.Bottom - 10 * 11; end;
-    11: begin StartY := Rect.Bottom - 10 * 12; end;
-    12: begin StartY := Rect.Bottom - 10 * 13; end;
-    13: begin StartY := Rect.Bottom - 10 * 14; end;
-    14: begin StartY := Rect.Bottom - 10 * 15; end;
-    15: begin StartY := Rect.Bottom - 10 * 16; end;
-  end;
+    // Berechne die Y-Positionen für den Anfang und das Ende des grünen Bereichs
+    EndY   := Rect.Bottom;
+    StartY := Rect.Bottom - 10 *  1;
 
-  // Setze die Farbe für den grünen Bereich
-  PaintBox1.Canvas.Brush.Color := clGreen;
-  PaintBox1.Canvas.Brush.Style := bsSolid;
+    // Setze die Farbe für den grünen Bereich
+    PaintBox1.Canvas.Brush.Color := clGreen;
+    PaintBox1.Canvas.Brush.Style := bsSolid;
 
-  // Zeichne das gefüllte Rechteck für den grünen Bereich
-  GreenRect := Rect.Create(GreenStartX, StartY, GreenEndX, EndY);
-  PaintBox1.Canvas.FillRect(GreenRect);
+    // Zeichne das gefüllte Rechteck für den grünen Bereich
+    GreenRect := Rect.Create(GreenStartX, StartY, GreenEndX, EndY);
+    PaintBox1.Canvas.FillRect(GreenRect);
 end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 var
-  in_zahl_2 : Integer;
-  //
-  prime: Boolean;
-  s: String;
-
-  i: Integer;
-  z1,z2,z3: uint64;
+    prime: Boolean;
+    s1, s2: String;
+    i: Integer;
 begin
-  graph_zahl := 1;
-  run_zahl := 0;
+    graph_zahl := 1;
 
-  in_zahl_0 := StrToInt(Edit1.Text);
+    if mpz_set_str(z1,
+    PAnsiChar(AnsiString(Trim(Edit1.Text))), 10) <> 0
+    then
+    raise Exception.Create('invalid "twin 0" string.');
 
-  for i := Low(prim_array) to High(prim_array) do
-  begin
-    in_zahl_2 := in_zahl_0 mod prim_array[i];
-    if in_zahl_2 <> 0 then
+    for i := Low(prim_array) to High(prim_array) do
     begin
-        prime := true;
-    end else
-    begin
-        prime := false;
-        break;
+        mpz_set(a, input_number);
+
+        if mpz_set_str(b,
+        PAnsiChar(AnsiString(prim_array[i])), 10) <> 0
+        then
+        raise Exception.Create('invalid "prime array" string.');
+
+        mpz_mod(in_zahl_2, a, b);
+
+        if mpz_cmp_ui(in_zahl_2, 0) <> 0 then
+        begin
+            prime := true;
+        end else
+        begin
+            prime := false;
+            break;
+        end;
     end;
-  end;
 
-  if prime then
-  begin
-    s := Edit1.Text;
-    RichEdit1.Lines.Insert(0, s);
-  end;
-
-  if not checkbox1.checked then
-  begin
-    Timer1.Enabled := false;
-    Timer2.Enabled := false;
-    Button1.Enabled := true;
-    exit;
-  end;
-
-  // zwilling ?
-  if RichEdit1.Lines.Count > 1 then
-  begin
-    z1 := StrToInt(RichEdit1.Lines.Strings[0]);
-    z2 := StrToInt(RichEdit1.Lines.Strings[1]);
-    z3 := z1 - z2;
-    if (prime = true) and (z3 = 2) then
+    if prime then
     begin
-      RichEdit2.Lines.Insert(0,Format('%s, %s',[
-      IntToStr(z1),
-      IntToStr(z2)]));
+        s1 := Edit1.Text;
+        RichEdit1.Lines.Insert(0, s1);
     end;
-  end;
 
-  inc(in_zahl_0);
-  twin_zahl_old := in_zahl_0;
+    if not checkbox1.checked then
+    begin
+        Timer1.Enabled := false;
+        Timer2.Enabled := false;
+        Button1.Enabled := true;
+        exit;
+    end;
 
-  // reduziere Resourcenverbrauch ...
-  if RichEdit1.Lines.Count >= 50 then
-  begin
-    Timer1.Enabled := false;
-    Timer2.Enabled := false;
+    // zwilling ?
+    if RichEdit1.Lines.Count > 1 then
+    begin
+        if mpz_set_str(z1,
+        PAnsiChar(AnsiString(RichEdit1.Lines.Strings[0])), 10) <> 0
+        then
+        raise Exception.Create('invalid "twin 0" string.');
 
-    s := RichEdit1.Lines.Strings[0]; // Erste Zeile speichern
+        if mpz_set_str(z2,
+        PAnsiChar(AnsiString(RichEdit1.Lines.Strings[1])), 10) <> 0
+        then
+        raise Exception.Create('invalid "twin 1" string.');
 
-    RichEdit1.Lines.Clear;
-    RichEdit1.Lines.Add(s);
+        // check for twins:
+        mpz_sub(z3, z1, z2);
 
-    Timer1.Enabled := True;
-    Timer2.Enabled := True;
-  end;
+        if (prime = true) and (mpz_cmp_ui(z3, 2)  = 0) then
+        begin
+            s1 := mpz_get_str(nil, 10, z1);
+            s2 := mpz_get_str(nil, 10, z2);
 
-  if RichEdit1.Lines.Count > 0 then
-  if Length(RichEdit1.Lines.Strings[0]) > 0 then
-  gap_zahl := StrToInt(Edit1.Text) - StrToInt(RichEdit1.Lines.Strings[0]);
-  run_zahl := run_zahl + 1;
+            RichEdit2.Lines.Insert(0,Format('%s, %s',[s1, s2]));
+        end;
+    end;
 
-  if gap_zahl > gap_zahl_old then
-  begin
-    Edit3.Text := IntToStr(gap_zahl);
-    gap_zahl_old := gap_zahl;
-  end;
+    mpz_set_ui(b, 1);
+    mpz_add(input_number, input_number, b);
 
-  // text
-  Edit1.Text := IntToStr(in_zahl_0);
-  Panel2.Caption := Format(' %d', [gap_zahl + 1]);
+    // reduziere Resourcenverbrauch ...
+    if RichEdit1.Lines.Count >= 50 then
+    begin
+        Timer1.Enabled := false;
+        Timer2.Enabled := false;
 
-  PaintBox1Paint(Sender);
+        s1 := RichEdit1.Lines.Strings[0]; // Erste Zeile speichern
+
+        RichEdit1.Lines.Clear;
+        RichEdit1.Lines.Add(s1);
+
+        Timer1.Enabled := True;
+        Timer2.Enabled := True;
+    end;
+
+    if mpz_cmp(gap_zahl,gap_zahl_old) > 0 then
+    begin
+        Edit3.Text := mpz_get_str(nil, 10, gap_zahl);
+        mpz_set(gap_zahl_old, gap_zahl);
+    end;
+
+    // text
+    Edit1.Text     := mpz_get_str(nil, 10, input_number);
+    Panel2.Caption := mpz_get_str(nil, 10, gap_zahl);
+
+    PaintBox1Paint(Sender);
 end;
 
 procedure TForm1.Timer2Timer(Sender: TObject);
 var
-  Hours, Minutes, Seconds: Integer;
+    Hours, Minutes, Seconds: Integer;
 begin
-  inc(FSeconds);
+    inc(FSeconds);
 
-  // Umrechnung der Sekunden in Stunden, Minuten und Sekunden
-  Hours   :=  FSeconds div 3600;
-  Minutes := (FSeconds div 60) mod 60;
-  Seconds :=  FSeconds mod 60;
+    // Umrechnung der Sekunden in Stunden, Minuten und Sekunden
+    Hours   :=  FSeconds div 3600;
+    Minutes := (FSeconds div 60) mod 60;
+    Seconds :=  FSeconds mod 60;
 
-  Panel1.Caption := Format(' %.2d - %.2d - %.2d',
-  [Hours, Minutes, Seconds]);
+    Panel1.Caption := Format(' %.2d - %.2d - %.2d',
+    [Hours, Minutes, Seconds]);
 end;
 
 end.

@@ -12,6 +12,8 @@ object Form1: TForm1
   Font.Style = []
   KeyPreview = True
   Menu = MainMenu1
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
   OnKeyUp = FormKeyUp
   TextHeight = 16
