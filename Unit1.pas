@@ -243,6 +243,10 @@ begin
             s1 := mpz_get_str(nil, 10, z1);
             s2 := mpz_get_str(nil, 10, z2);
 
+            if RichEdit2.Lines.Count > 75 then
+            RichEdit2.Lines.Clear;
+
+            RichEdit2.Lines.Insert(0,'');
             RichEdit2.Lines.Insert(0,Format('%s, %s',[s1, s2]));
         end;
     end;
