@@ -249,10 +249,13 @@ begin
 
     mpz_set_str(z1, PAnsiChar(AnsiString(Edit1.Text)), 10);
     mpz_set_ui(z2, 2);
-
-//    if mpz_cmp_ui(z1, 60) = 0 then
+    if prime then
     begin
-        // Faltorisierung (wenn nicht Prime)
+        RichEdit3.Lines.Add('Factorize: ' + mpz_get_str(nil, 10, z1) + 'is prime');
+        RichEdit3.Lines.Add('');
+    end else
+    begin
+        // Faltorisierung (wenn nicht Prime - echte Faktoren)
         Timer1.Enabled := false;
         Timer2.Enabled := false;
 
@@ -270,6 +273,8 @@ begin
             end;
             mpz_add_ui(z2, z2, 1);
         end;
+
+        RichEdit3.Lines.Add('');
 
         Timer2.Enabled := true;
         Timer1.Enabled := true;
@@ -304,18 +309,18 @@ begin
             s1 := mpz_get_str(nil, 10, z1);
             s2 := mpz_get_str(nil, 10, z2);
 
-            if RichEdit2.Lines.Count > 75 then
-            RichEdit2.Lines.Clear;
+            //if RichEdit2.Lines.Count > 75 then
+            //RichEdit2.Lines.Clear;
 
-            RichEdit2.Lines.Insert(0,'');
-            RichEdit2.Lines.Insert(0,Format('%s, %s',[s1, s2]));
+            //RichEdit2.Lines.Insert(0,'');
+            RichEdit2.Lines.Insert(0,Format('%s, %s',[s2, s1]));
         end;
     end;
 
-    mpz_set_ui(b, 1);
-    mpz_add(input_number, input_number, b);
+    mpz_add_ui(input_number, input_number, 1);
 
     // reduziere Resourcenverbrauch ...
+    (*
     if RichEdit1.Lines.Count >= 50 then
     begin
         Timer1.Enabled := false;
@@ -328,7 +333,7 @@ begin
 
         Timer1.Enabled := True;
         Timer2.Enabled := True;
-    end;
+    end;*)
 
     // text
     Edit1.Text     := mpz_get_str(nil, 10, input_number);
