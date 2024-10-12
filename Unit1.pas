@@ -49,6 +49,7 @@ type
     Button1: TButton;
     Chart1: TChart;
     Chart2: TChart;
+    CheckBox2: TCheckBox;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Timer1Timer(Sender: TObject);
     procedure Button1Click(Sender: TObject);

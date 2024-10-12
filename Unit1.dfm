@@ -34,7 +34,6 @@ object Form1: TForm1
     Height = 258
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 280
     object Label4: TLabel
       Left = 0
       Top = 150
@@ -92,8 +91,6 @@ object Form1: TForm1
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
-          ExplicitLeft = -6
-          ExplicitWidth = 430
         end
       end
       object Panel6: TPanel
@@ -104,10 +101,6 @@ object Form1: TForm1
         Align = alClient
         Caption = 'Panel4'
         TabOrder = 1
-        ExplicitLeft = 464
-        ExplicitTop = 17
-        ExplicitWidth = 434
-        ExplicitHeight = 161
         object Label7: TLabel
           Left = 1
           Top = 1
@@ -133,9 +126,6 @@ object Form1: TForm1
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
-          ExplicitLeft = 2
-          ExplicitTop = 18
-          ExplicitWidth = 565
         end
       end
     end
@@ -157,9 +147,6 @@ object Form1: TForm1
         Align = alClient
         Color = 15138815
         TabOrder = 0
-        ExplicitLeft = 2
-        ExplicitTop = 2
-        ExplicitHeight = 38
         DefaultCanvas = 'TGDIPlusCanvas'
         ColorPaletteIndex = 13
       end
@@ -181,7 +168,6 @@ object Form1: TForm1
           'TChart')
         Align = alClient
         TabOrder = 0
-        ExplicitHeight = 112
         DefaultCanvas = 'TGDIPlusCanvas'
         ColorPaletteIndex = 13
       end
@@ -193,9 +179,6 @@ object Form1: TForm1
     Width = 780
     Height = 19
     Panels = <>
-    ExplicitLeft = 120
-    ExplicitTop = 296
-    ExplicitWidth = 0
   end
   object Panel8: TPanel
     Left = 0
@@ -204,7 +187,6 @@ object Form1: TForm1
     Height = 191
     Align = alLeft
     TabOrder = 2
-    ExplicitHeight = 277
     object Label5: TLabel
       Left = 8
       Top = 8
@@ -260,10 +242,6 @@ object Form1: TForm1
     Height = 191
     Align = alClient
     TabOrder = 3
-    ExplicitLeft = 143
-    ExplicitTop = 107
-    ExplicitWidth = 759
-    ExplicitHeight = 187
     object Label6: TLabel
       Left = 6
       Top = 8
@@ -303,7 +281,6 @@ object Form1: TForm1
         ReadOnly = True
         ScrollBars = ssVertical
         TabOrder = 0
-        ExplicitHeight = 167
       end
     end
     object CheckBox1: TCheckBox
@@ -323,13 +300,21 @@ object Form1: TForm1
       Text = '2'
     end
     object Button1: TButton
-      Left = 432
-      Top = 19
-      Width = 93
-      Height = 46
+      Left = 314
+      Top = 60
+      Width = 92
+      Height = 41
       Caption = 'Start'
       TabOrder = 3
       OnClick = Button1Click
+    end
+    object CheckBox2: TCheckBox
+      Left = 430
+      Top = 20
+      Width = 129
+      Height = 17
+      Caption = 'reverse Order'
+      TabOrder = 4
     end
   end
   object Timer1: TTimer
